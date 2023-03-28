@@ -1,6 +1,8 @@
 #ifndef _CADENA_HPP_
 #define _CADENA_HPP_
 
+#include <iostream>
+
 class Cadena{
 public:
 	//Constructores
@@ -29,10 +31,10 @@ public:
 
 	//Observadores
 	char& operator [](size_t indice) noexcept{return s_[indice];}
-	char& operator at(size_t indice);
+	char& at(size_t indice);
 	const char& operator [](size_t indice) const noexcept{return s_[indice];}
-	const char& operator at(size_t indice);
-	Cadena substr(size_t indice, size_t tam);
+	const char& at(size_t indice) const;
+	Cadena substr(size_t indice, size_t tam) const;
 
 	//Destructor
 	~Cadena();

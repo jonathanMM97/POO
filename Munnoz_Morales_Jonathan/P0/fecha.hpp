@@ -1,7 +1,9 @@
+#include <cstring>
+
 #ifndef _FECHA_HPP_
 #define _FECHA_HPP_
 
-public class Fecha{
+class Fecha{
 public:
 
 	//Contantes públicas
@@ -9,9 +11,9 @@ public:
 	static const int AnnoMaximo = 2037;
 
 	//clase pública Invalida
-	public class Invalida{
+	class Invalida{
 	public:
-		Invalida(const char* porque){std::strcpy(porque_, porque);}
+		Invalida(const char* porque){strcpy(porque_, porque);}
 		inline const char* por_que(){return porque_;}
 	private:
 		char* porque_;
@@ -41,12 +43,12 @@ public:
 	Fecha& operator -=(int dias);
 
 	//Metodos amigos(friend)
-	friend Fecha& operator <(const Fecha& f, const Fecha& g);
-	friend Fecha& operator <=(const Fecha& f, const Fecha& g);
-	friend Fecha& operator ==(const Fecha& f, const Fecha& g);
-	friend Fecha& operator !=(const Fecha& f, const Fecha& g);
-	friend Fecha& operator >(const Fecha& f, const Fecha& g);
-	friend Fecha& operator <=(const Fecha& f, const Fecha& g);
+	friend bool operator <(const Fecha& f, const Fecha& g);
+	friend bool operator <=(const Fecha& f, const Fecha& g);
+	friend bool operator ==(const Fecha& f, const Fecha& g);
+	friend bool operator !=(const Fecha& f, const Fecha& g);
+	friend bool operator >(const Fecha& f, const Fecha& g);
+	friend bool operator <=(const Fecha& f, const Fecha& g);
 
 	//Destructor
 	~Fecha() = default;

@@ -1,6 +1,7 @@
 #include "cadena.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
 Cadena::Cadena(size_t tam, char c):s_(new char[tam + 1]), tam_(tam)
 {
@@ -40,7 +41,7 @@ Cadena& Cadena::operator +=(const Cadena& cadena)
 	tam_ += cadena.tam_;
 
 	delete[] s_;
-	s_ new char[tam_ + 1];
+	s_ = new char[tam_ + 1];
 	strcpy(s_, aux);
 	strcat(s_, cadena.s_);
 
@@ -106,7 +107,7 @@ Cadena Cadena::substr(size_t indice, size_t tam) const
 		throw std::out_of_range("Funcion substr(): fuera de limites.");
 	else{
 		Cadena aux(tam);
-		strncpy(aux.s_, s_ + i, tam);
+		strncpy(aux.s_, s_ + indice, tam);
 		aux.s_[tam] = '\0';
 		return aux;
 	}

@@ -25,7 +25,7 @@ Fecha::Fecha(int dia, int mes, int anno):dia_(dia), mes_(mes), anno_(anno)
 Fecha::Fecha(const char* fecha)
 {
 	int dia, mes, anno;
-	if(sscanf(fecha, "%d/%d/%d",&dia, %mes, %anno) != 3)
+	if(sscanf(fecha, "%d/%d/%d",&dia, &mes, &anno) != 3)
 	{
 		Fecha::Invalida format("Formato incorrecto por parte de la cadena recibida.");
 		throw format;
@@ -43,7 +43,7 @@ Fecha::operator const char*() const
 	std::time_t tiempo_calendario = std::time(nullptr);
 	std::tm* f = std::localtime(&tiempo_calendario);
 
-	f->tm_day = dia_;
+	f->tm_mday = dia_;
 	f->tm_mon = mes_ -1;
 	f->tm_year = anno_ - 1900;
 	mktime(f);
@@ -54,12 +54,12 @@ Fecha::operator const char*() const
 Fecha& Fecha::operator +=(int dias)
 {
 	std::tm f{};
-	f.tm_mday = this.dia_+dias;
-	f.tm_mon = this.mes_ - 1;
-	f.tm_year = this.anno_ - 1900;
+	f.tm_mday = dia_+dias;
+	f.tm_mon = mes_ - 1;
+	f.tm_year = anno_ - 1900;
 	std::mktime(&f);
 
-	dia_ = f.tm_day;
+	dia_ = f.tm_mday;
 	mes_ = f.tm_mon + 1;
 	anno_ = f.tm_year + 1900;
 
@@ -125,7 +125,7 @@ bool operator !=(const Fecha& f, const Fecha& g)
 
 bool operator <(const Fecha& f, const Fecha& g)
 {
-	return (f.anno_ g.anno_ || (f.anno_ == g.anno_ && f.mes_ < g.mes_ || (f.mes_ == g.mes_ && f.dia_ < g.dia_)));
+	return (f.anno_ < g.anno_ || (f.anno_ == g.anno_ && f.mes_ < g.mes_ || (f.mes_ == g.mes_ && f.dia_ < g.dia_)));
 }
 
 
