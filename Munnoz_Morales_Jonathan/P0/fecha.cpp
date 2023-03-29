@@ -1,145 +1,195 @@
+/**
+  * @author Jonathan Muñoz Morales
+  * @version 29/03/2023
+*/
+
 #include "fecha.hpp"
-#include <iostream>
-#include <ctime>
-#include <cstdio>
-#include <locale>
 
-Fecha::Fecha(int dia, int mes, int anno):dia_(dia), mes_(mes), anno_(anno)
-{
-	std::time_t tiempo_calendario = std::time(nullptr);
-	std::tm* tiempo_descompuesto = std::localtime(&tiempo_calendario);
 
-	if(anno_ == 0)
-		anno_ = tiempo_descompuesto->tm_year + 1900;
+Fecha::Fecha(int dia, int mes, int anno): dia_(dia), mes_(mes), anno_(anno)
+{		//Constructor predeterminado y de conversion
 
-	if(mes_ == 0)
-		mes_ = tiempo_descompuesto->tm_mon +1;
+    std::time_t tiempo_cal = std::time(nullptr);
+    std::tm* tiempo_descompuesto = std::localtime(&tiempo_cal);
 
-	if(dia_ == 0)
-		dia_ = tiempo_descompuesto->tm_mday;
+    if(dia_ == 0)
+      dia_ = tiempo_descompuesto->tm_mday;
+    if(mes_ == 0)
+      mes_ = tiempo_descompuesto->tm_mon + 1;
+    if(anno_ == 0)
+      anno_ = tiempo_descompuesto->tm_year + 1900;
 
-	if(dia != 0 || mes != 0 || anno != 0)
-		esValida();
+    comprobarFecha();
 }
 
-Fecha::Fecha(const char* fecha)
-{
-	int dia, mes, anno;
-	if(sscanf(fecha, "%d/%d/%d",&dia, &mes, &anno) != 3)
-	{
-		Fecha::Invalida format("Formato incorrecto por parte de la cadena recibida.");
-		throw format;
-	}
 
-	Fecha f(dia, mes, anno);
-	*this = f;
+Fecha::Fecha(const char* cadena)
+{			//Contructor de conversion
+
+  if(sscanf(cadena, "%d/%d/%d", &dia_, &mes_, &anno_) == 3)
+    *this = Fecha(dia_,mes_,anno_);
+
+  else
+    throw Invalida("Error de conversion: Fecha introducida incorrecta.");
 }
 
 Fecha::operator const char*() const
-{
-	std::locale::global(std::locale("es_ES.utf8"));
-	char* aux = new char[100];
+{			//Operador de conversion a cadena de caracteres
 
-	std::time_t tiempo_calendario = std::time(nullptr);
-	std::tm* f = std::localtime(&tiempo_calendario);
+  static char* fechaCad = new char[36];//variable a devolver con un tamaño establecido
 
-	f->tm_mday = dia_;
-	f->tm_mon = mes_ -1;
-	f->tm_year = anno_ - 1900;
-	mktime(f);
-	strftime(aux, 100, "%A %e de %B de %Y", f);
-	return aux;
+  tm t = {0, 0, 0, dia_, mes_ - 1, anno_ - 1900, 0, 0, 0};
+
+  mktime(&t);//actualizamos la hora del sistema
+
+  setlocale(LC_ALL, "es_ES");
+  strftime(fechaCad, 36, "%A %d de %B de %Y", &t);//rellenamos en la cadena a devolver el formato pedido
+  return fechaCad;
 }
 
-Fecha& Fecha::operator +=(int dias)
-{
-	std::tm f{};
-	f.tm_mday = dia_+dias;
-	f.tm_mon = mes_ - 1;
-	f.tm_year = anno_ - 1900;
-	std::mktime(&f);
+Fecha& Fecha::operator += (int dias)
+{			//Operador aritmetico
 
-	dia_ = f.tm_mday;
-	mes_ = f.tm_mon + 1;
-	anno_ = f.tm_year + 1900;
+  std::time_t tiempo_cal = std::time(nullptr);
+  std::tm* tiempoOper = std::localtime(&tiempo_cal);
 
-	esValida();
-	return *this;
+  tiempoOper->tm_mday = dia_ + dias;
+  tiempoOper->tm_mon = mes_ - 1;
+  tiempoOper->tm_year = anno_ - 1900;
+
+  mktime(tiempoOper);//Actualizamos la hora
+
+  dia_ = tiempoOper->tm_mday;
+  mes_ = tiempoOper->tm_mon + 1;
+  anno_ = tiempoOper->tm_year + 1900;
+
+  comprobarFecha();
+  return *this;
 }
 
 Fecha& Fecha::operator -=(int dias)
-{
-	*this += -dias;
-	return *this;
-}
+{			//Operador aritmetico
 
-Fecha& Fecha::operator ++()
-{
-	*this += 1;
-	return *this;
-}
-
-Fecha& Fecha::operator ++(int)
-{
-	Fecha *f = new Fecha(*this);
-
-	*this += 1;
-	return *f;
-}
-
-Fecha& Fecha::operator --()
-{
-	*this += -1;
-	return *this;
-}
-
-Fecha& Fecha::operator --(int)
-{
-	Fecha *f = new Fecha(*this);
-
-	*this += -1;
-	return *f;
+  *this += -dias;
+  return *this;
 }
 
 Fecha Fecha::operator +(int dias) const
-{
-	Fecha f(*this);
-	return f += dias;
+{			//Operador aritmetico
+
+  Fecha tmp = *this;
+  tmp += dias;
+  return tmp;
 }
 
 Fecha Fecha::operator -(int dias) const
-{
-	Fecha f(*this);
-	return f += -dias;
+{			//Operador aritmetico
+
+  Fecha t = *this;
+  t += -dias;
+  return t;
 }
 
-bool operator ==(const Fecha& f, const Fecha& g)
-{
-	return (f.dia_ == g.dia_ && f.mes_ == g.mes_ && f.anno_ == g.anno_);
-}
+Fecha& Fecha::operator++()
+{			//Operador aritmetico de incremento
 
-bool operator !=(const Fecha& f, const Fecha& g)
-{
-	return !(f == g);
-}
-
-bool operator <(const Fecha& f, const Fecha& g)
-{
-	return (f.anno_ < g.anno_ || (f.anno_ == g.anno_ && f.mes_ < g.mes_ || (f.mes_ == g.mes_ && f.dia_ < g.dia_)));
+  *this+=1;
+  return *this;
 }
 
 
-bool operator >(const Fecha& f, const Fecha& g)
-{
-	return g < f;
+Fecha Fecha::operator++(int)
+{			//Operador aritmetico de incremento pero antes de incrementar devuelve el estado original
+
+  Fecha t(*this);
+  *this += 1;
+  return t;
 }
 
-bool operator <=(const Fecha& f, const Fecha& g)
-{
-	return !(g < f);
+Fecha& Fecha::operator--()
+{			//Operador aritmetico de decremento
+
+  *this += -1;
+  return *this;
 }
 
-bool operator >=(const Fecha& f, const Fecha& g)
-{
-	return !(f < g);
+Fecha Fecha::operator--(int)
+{			//Operador aritmetico de decremento pero antes de decrementar devuelve el estado original
+
+  Fecha t(*this);
+  *this += -1;
+  return t;
+}
+void Fecha::comprobarFecha() const
+{			//Lanza una excepción en caso de que se cumpla alguna de las condiciones escritas
+
+  setlocale(LC_ALL, "es_ES");
+  if(anno_ < AnnoMinimo || anno_ > AnnoMaximo)
+    throw Invalida("Error Anno: Año incorrecto.");
+  if(mes_ < 1 || mes_ > 12)
+    throw Invalida("Error mes: Mes incorrecto.");
+  if(dia_ < 1 || dia_ > 31)
+    throw Invalida("Error dia: Dia incorrecto.");
+  if(dia_ == 29 && mes_ == 2 && !comprobarAnnoBisiesto())
+    throw Invalida("Error dia: Dia incorrecto.");
+  if(dia_ > 29 && mes_ == 2)
+    throw Invalida("Error dia: Dia incorrecto");
+  if((mes_ == 4 || mes_ == 6 || mes_ == 9 || mes_ == 11) && dia_ > 30)
+    throw Invalida("Erro mes: Mes incorrecto.");
+}
+
+bool Fecha::comprobarAnnoBisiesto() const
+{			//Devuelve si el año a evaluar es bisiesto o no.
+
+  return (anno_ % 4 == 0 && (anno_ % 400 == 0 || anno_ % 100 != 0));
+}
+
+void Fecha::comprobarRangoAnnos() const
+{			//Comprueba si el año a evaluar esta en los límites establecidos por el documento(Requisitos)
+
+  if(anno_ < AnnoMinimo || anno_ > AnnoMaximo)
+    throw Invalida("Error anno: Demasiado antiguo o demasiado hacia el futuro.");
+}
+
+bool operator < (const Fecha& a, const Fecha& b)
+{			//Operador logico que junto al operador "==" los demás solo hacen uso de llamadas a estos así evitamos codigo redundante
+
+  if(a.anno() < b.anno())
+    return true;
+  else if(a.mes() < b.mes())
+    return true;
+  else if(a.dia() < b.dia())
+    return true;
+  else
+    return false;
+}
+
+bool operator == (const Fecha& a, const Fecha& b)
+{			//Operador logico que junto al operador "<" los demás solo hacen uso de llamadas a estos así evitamos codigo redundante
+
+  return ((a.dia() == b.dia()) && (a.mes() == b.mes()) && (a.anno() == b.anno()));
+}
+
+bool operator > (const Fecha& a, const Fecha& b)
+{			//Operador logico
+
+    return (b < a);
+}
+
+bool operator <= (const Fecha& a, const Fecha& b)
+{			//Operador logico
+
+  return (a < b || a == b);
+}
+
+bool operator >= (const Fecha& a, const Fecha& b)
+{			//Operador logico
+
+  return (b < a || a == b);
+}
+
+bool operator != (const Fecha& a, const Fecha& b)
+{			//Operador logico
+
+  return !(a == b);
 }

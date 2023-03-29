@@ -1,120 +1,134 @@
+/**
+  * @author Jonathan Muñoz Morales
+  * @version 29/03/2023
+*/
+
 #include "cadena.hpp"
-#include <iostream>
-#include <stdexcept>
-#include <cstring>
 
-Cadena::Cadena(size_t tam, char c):s_(new char[tam + 1]), tam_(tam)
-{
-	for(size_t i = 0 ; i < tam ; i++)
-		s_[i] = c;
-	s_[tam_] = '\0';
+Cadena::Cadena(size_t tam, char c): tam_(tam){
+  s_ = new char[tam_ + 1];
+
+  for(size_t i = 0; i < tam_; i++)
+    s_[i] = c;
+
+  s_[tam_] = '\0';
 }
 
-Cadena::Cadena(const Cadena& cadena):s_(new char[cadena.tam_ + 1]), tam_(cadena.tam_)
-{
-	strcpy(s_, cadena.s_);
+Cadena::Cadena(const Cadena& cadena):tam_(cadena.tam_){
+  s_ = new char[cadena.tam_ + 1];
+  strcpy(s_, cadena.s_);
+  s_[tam_] = '\0';
 }
 
-Cadena::Cadena(const char* cadena):s_(new char[strlen(cadena)+1]), tam_(strlen(cadena))
-{
-	strcpy(s_, cadena);
+Cadena::Cadena(const char* cadena){
+  tam_ = strlen(cadena);
+  s_ = new char[tam_ + 1];
+  strcpy(s_, cadena);
+  s_[tam_] = '\0';
 }
 
-Cadena& Cadena::operator =(const Cadena& cadena)
-{
-	if(this != &cadena)
-	{
-		delete[] s_;
-		s_ = new char[cadena.tam_ + 1];
-		tam_ = cadena.tam_;
-		strcpy(s_, cadena.s_);
-	}
+Cadena::Cadena(const Cadena& cadena, const size_t indice, const size_t tam){
+  if(indice > cadena.tam_)
+    throw std::out_of_range("Error acceso: Indice fuera de rango.");
+  tam_ = cadena.tam_ - indice;
 
-	return *this;
+  if(tam < tam_)
+    tam_ = tam;
+
+  s_ = new char[tam_ + 1];
+  std::strncpy(s_, cadena.s_ + indice, tam_);
+  s_[tam_] = 0;
 }
 
-Cadena& Cadena::operator +=(const Cadena& cadena)
-{
-	char* aux = new char[tam_+1];
-	strcpy(aux, s_);
+Cadena& Cadena::operator=(const Cadena& cadena){
+  if(strcmp(s_, cadena.s_) != 0){
+    delete[] s_;
+    tam_ = 0;
+    s_ = nullptr;
 
-	tam_ += cadena.tam_;
-
-	delete[] s_;
-	s_ = new char[tam_ + 1];
-	strcpy(s_, aux);
-	strcat(s_, cadena.s_);
-
-	delete[] aux;
-	return *this;
+    tam_ = cadena.tam_;
+    s_ = new char[tam_ + 1];
+    strcpy(s_, cadena.s_);
+  }
+  return *this;
 }
 
-Cadena operator +(const Cadena& cad, const Cadena& cad1)
-{
-	Cadena aux(cad);
-	return aux += cad1;
+Cadena& Cadena::operator=(const char* cadena){
+  tam_ = strlen(cadena);
+  s_ = new char[tam_ + 1];
+  strcpy(s_, cadena);
+  return *this;
 }
 
-bool operator ==(const Cadena& cad, const Cadena& cad1)
-{
-	return !strcmp(cad, cad1);
+Cadena::operator const char*() const{
+    return s_;
 }
 
-bool operator !=(const Cadena& cad, const Cadena& cad1)
-{
-	return strcmp(cad, cad1);
+Cadena& Cadena::operator+=(const Cadena& cadena){
+  char* aux = new char[tam_ + 1];
+  strcpy(aux, s_);
+  delete[] s_;
+  tam_ += cadena.tam_;
+  s_ = new char[tam_ + 1];
+  strcpy(s_, aux);
+  delete[] aux;
+  strcat(s_, cadena.s_);
+  return *this;
 }
 
-bool operator <(const Cadena& cad, const Cadena& cad1)
-{
-	return (strcmp(cad, cad1) < 0); 
+Cadena operator+(const Cadena& a, const Cadena& b){
+  Cadena aux = a;
+  aux+=b;
+  return aux;
 }
 
-bool operator >(const Cadena& cad, const Cadena& cad1)
-{
-	return cad1 < cad;
+const char& Cadena::at(size_t indice) const{
+  if(indice >= tam_)
+    throw std::out_of_range("Error at: indice fuera de rango.");
+  return s_[indice];
 }
 
-bool operator <=(const Cadena& cad, const Cadena& cad1)
-{
-	return !(cad1 < cad);
+char& Cadena::at(size_t indice){
+  if(indice >= tam_)
+    throw std::out_of_range("Error at: indice fuera de rango.");
+  return s_[indice];
 }
 
-bool operator >=(const Cadena& cad, const Cadena& cad1)
-{
-	return !(cad < cad1);
+Cadena Cadena::substr(size_t indice, size_t tam) const{
+  if(indice >= tam_ || tam > tam_ - indice)
+    throw std::out_of_range("Error substr: Indice fuera de rango.");
+  return Cadena(*this, indice, tam);
 }
 
-char& Cadena::at(size_t indice)
-{
-	if(indice < tam_)
-		return s_[indice];
-	else
-		throw std::out_of_range("Funcion at(): fuera de limites.");
+
+bool operator < (const Cadena& a, const Cadena& b){
+  return strcmp(a.c_str(), b.c_str()) < 0;
 }
 
-const char& Cadena::at(size_t indice) const
-{
-        if(indice < tam_)
-                return s_[indice];
-        else 
-                throw std::out_of_range("Funcion at(): fuera de limites.");
+bool operator > (const Cadena& a, const Cadena& b){
+  return (b < a);
 }
 
-Cadena Cadena::substr(size_t indice, size_t tam) const
-{
-	if(indice + tam > tam_ || tam > tam_ || indice > tam_)
-		throw std::out_of_range("Funcion substr(): fuera de limites.");
-	else{
-		Cadena aux(tam);
-		strncpy(aux.s_, s_ + indice, tam);
-		aux.s_[tam] = '\0';
-		return aux;
-	}
+bool operator == (const Cadena& a, const Cadena& b){
+  return strcmp(a.c_str(), b.c_str()) == 0;
 }
 
-Cadena::~Cadena()
-{
-	delete[] s_;
-	tam_ = 0;
+bool operator != (const Cadena& a, const Cadena& b){
+  return !(a == b);
+}
+
+bool operator <= (const Cadena& a, const Cadena& b){
+  return !(b < a);
+}
+
+bool operator >= (const Cadena& a, const Cadena& b){
+  return !(a < b);
+}
+
+Cadena::~Cadena(){
+  if(tam_ > 0){
+    delete[] s_;
+    tam_ = 0;
+    s_ = nullptr;
+  }
 }
