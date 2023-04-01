@@ -33,6 +33,29 @@ Fecha::Fecha(const char* cadena)
     throw Invalida("Error de conversion: Fecha introducida incorrecta.");
 }
 
+const char* Fecha::cadena() const
+{
+
+  
+  static char aux[36];
+
+  tm t = {};
+  t.tm_mday = dia_;
+  t.tm_mon = mes_ - 1;
+  t.tm_year = anno_ - 1900;
+
+  static const char* semana[7] = {"domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"};
+  static const char* mes[13] = {"", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"};
+
+  mktime(&t);
+  int diasem = t.tm_wday;
+
+  sprintf(aux, "%s %d de %s de %d", semana[diasem], dia_, mes[mes_], anno_);
+
+  return aux;
+}
+
+/*
 Fecha::operator const char*() const
 {			//Operador de conversion a cadena de caracteres
 
@@ -42,10 +65,12 @@ Fecha::operator const char*() const
 
   mktime(&t);//actualizamos la hora del sistema
 
-  
+  setlocale(LC_ALL, "es_ES");
   strftime(fechaCad, 36, "%A %d de %B de %Y", &t);//rellenamos en la cadena a devolver el formato pedido
   return fechaCad;
 }
+
+*/
 
 Fecha& Fecha::operator += (int dias)
 {			//Operador aritmetico
@@ -191,4 +216,35 @@ bool operator != (const Fecha& a, const Fecha& b)
 {			//Operador logico
 
   return !(a == b);
+}
+
+// ------------------------- Sobrecarga del operador << ------------------------------------
+std::ostream& operator <<(std::ostream& os, const Fecha& f)
+{
+
+  os << f.cadena();
+  return os;
+}
+
+// ------------------------- Sobrecarga del operador >> ------------------------------------
+std::istream& operator >>(std::istream& is, Fecha& f)
+{
+
+  char* cadena = new char[11];
+  
+  is.getline(cadena, 11);
+  
+  try{
+  
+    f = Fecha(cadena);
+  
+  }catch(Fecha::Invalida& e){
+  
+    is.setstate(std::ios::failbit);
+  
+    throw;
+  
+  }
+
+  return is;
 }

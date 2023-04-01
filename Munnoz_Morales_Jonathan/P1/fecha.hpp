@@ -8,6 +8,8 @@
 
 #include <cstdio>
 #include <ctime>
+#include <clocale>
+#include <iostream>
 
 class Fecha{
 public:
@@ -34,10 +36,11 @@ public:
 
   // -------------------------- Observadores ----------------------------------------
 
-  operator const char*() const;
+  //operator const char*() const;
   inline int dia() const noexcept{return dia_;}
   int mes() const noexcept{return mes_;}
   int anno() const noexcept{return anno_;}
+  const char* cadena() const;//nuevo metodo de conversion explicito requerido por la implementacion de P1...
 
   // ------------------------- Operadores aritmeticos ------------------------------------
 
@@ -50,6 +53,11 @@ public:
   Fecha& operator --();
   Fecha operator --(int);
 
+  // ------------------------- Metodos amigos de la clase, sobrecarga de operadores de entrada y salida ------------------------------------
+
+  friend std::ostream& operator <<(std::ostream& os, const Fecha& f);
+  friend std::istream& operator >>(std::istream& is, Fecha& f);
+  
   private:
     int dia_, mes_, anno_;//variables dia_ almacenará el dia de la fecha el mes_ el mes y el anno_ el año de la fecha
 
