@@ -1,3 +1,8 @@
+/*
+    * @author Jonathan Muñoz Morales
+    * @version 1.0
+
+*/
 #ifndef ARTICULO_HPP_
 #define ARTICULO_HPP_
 
@@ -7,25 +12,31 @@
 #include "cadena.hpp"
 #include "fecha.hpp"
 
+
 class Articulo{
+private:// tiene cinco atributos privados
+    Cadena codRef, title;
+    Fecha PublDate;
+    double price;
+    unsigned nCopies;
+
 public:
-  Articulo(const Cadena ref, Cadena tit, const Fecha f_pub, double price, unsigned st);
-  Cadena referencia() const {return referencia_;}
-  Cadena titulo() const {return titulo_;}
-  Fecha f_publi() const {return f_publicacion;}
-  double precio() const {return precio_;}
-  double& precio(){return precio_;}
-  unsigned stock() const {return stock_;}
-  unsigned& stock(){return stock_;}
-private:
-  Cadena referencia_, titulo_;
-  Fecha f_publicacion;
-  double precio_;
-  unsigned stock_;
+
+    //Constructor...
+    inline Articulo(Cadena cod, Cadena tit, Fecha date, double p, size_t copies):codRef(cod), title(tit), PublDate(date), price(p), nCopies(copies){}
+
+    //Observables...
+    inline Cadena referencia() const{return codRef;}
+    inline Cadena titulo() const{return title;}
+    inline Fecha f_publi() const{return PublDate;}
+    inline double precio() const{return price;}
+    inline unsigned stock() const{return nCopies;}
+
+    //Modificadores...
+    inline double& precio(){return price;}
+    inline unsigned& stock(){return nCopies;}
 };
 
 std::ostream& operator <<(std::ostream& os, const Articulo& a);
 
-
-
-#endif
+#endif//ARTICULO_HPP_
