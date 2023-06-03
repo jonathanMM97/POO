@@ -1,3 +1,7 @@
+/**
+ * @author Jonathan Muñoz Morales
+ * @version 1.9
+*/
 
 #include "tarjeta.hpp"
 

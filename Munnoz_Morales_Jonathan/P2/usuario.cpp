@@ -1,3 +1,8 @@
+/**
+ * @author Jonathan Muñoz Morales
+ * @version 1.9
+*/
+
 #include "usuario.hpp"
 #include <unistd.h>  // for crypt
 #include <cstring>   // for strlen

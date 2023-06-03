@@ -1,6 +1,11 @@
 #ifndef USUARIO_HPP_
 #define USUARIO_HPP_
 
+/**
+ * @author Jonathan Muñoz Morales
+ * @version 1.9
+*/
+
 #include <map>
 #include <unordered_map>
 #include <unordered_set>

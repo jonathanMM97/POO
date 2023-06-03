@@ -1,5 +1,12 @@
 #ifndef TARJETA_HPP_
 #define TARJETA_HPP_
+
+/**
+ * @author Jonathan Muñoz Morales
+ * @version 1.9
+*/
+
+
 #include <iostream>
 #include <set>
 #include <cctype>
