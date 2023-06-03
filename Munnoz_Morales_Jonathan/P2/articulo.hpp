@@ -1,42 +1,35 @@
-/*
-    * @author Jonathan Muñoz Morales
-    * @version 1.0
+//PRACTICA 2
+//VIOLETA AI NAHARRO ZALDIVAR
 
-*/
 #ifndef ARTICULO_HPP_
 #define ARTICULO_HPP_
+#include "../P1/cadena.hpp"
+#include "../P1/fecha.hpp"
 
-#include <iomanip>
-#include <iostream>
+using namespace std;
 
-#include "cadena.hpp"
-#include "fecha.hpp"
+class Articulo
+{
+    public:
+        Articulo(Cadena ref, Cadena tit, Fecha rel, double price, int stock): 
+        reference(ref), title(tit), release(rel), price_(price), stock_(stock){};
 
+        Cadena referencia() const{return reference;};
+        Cadena titulo() const{return title;};
+        Fecha f_publi() const{return release;};
+        double precio() const{return price_;};
+        int stock() const{return stock_;};
+        double& precio(){return price_;};
+        int& stock(){return stock_;};
 
-class Articulo{
-private:// tiene cinco atributos privados
-    Cadena codRef, title;
-    Fecha PublDate;
-    double price;
-    unsigned nCopies;
-
-public:
-
-    //Constructor...
-    inline Articulo(Cadena cod, Cadena tit, Fecha date, double p, size_t copies):codRef(cod), title(tit), PublDate(date), price(p), nCopies(copies){}
-
-    //Observables...
-    inline Cadena referencia() const{return codRef;}
-    inline Cadena titulo() const{return title;}
-    inline Fecha f_publi() const{return PublDate;}
-    inline double precio() const{return price;}
-    inline unsigned stock() const{return nCopies;}
-
-    //Modificadores...
-    inline double& precio(){return price;}
-    inline unsigned& stock(){return nCopies;}
+    private:
+        const Cadena reference;
+        const Cadena title;
+        const Fecha release;
+        double price_;
+        int stock_;
 };
 
-std::ostream& operator <<(std::ostream& os, const Articulo& a);
+ostream& operator<<(ostream& os, const Articulo& art);
 
-#endif//ARTICULO_HPP_
+#endif

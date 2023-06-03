@@ -1,10 +1,11 @@
+//PRACTICA 2
+//VIOLETA AI NAHARRO ZALDIVAR
+
+#include <ostream>
 #include "articulo.hpp"
+using namespace std;
 
-std::ostream& operator<<(std::ostream& os, const Articulo& a)
-{
-    Fecha f = a.f_publi();
-    int y =  f.anno();
-    os<< "[" <<a.referencia() << "] \"" << a.titulo() << "\", " << y << ". " << std::fixed << std::setprecision(2) << a.precio() << " €" << std::endl;
-
-    return os;
+ostream& operator<<(ostream& os, const Articulo& art){
+    os << "["<<art.referencia() << "] "<<"\""<<art.titulo()<<"\", "<<art.f_publi().anno()<<". "<<art.precio()<<"€" ;
+    return os ;    
 }
