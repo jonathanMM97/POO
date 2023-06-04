@@ -13,29 +13,33 @@ using namespace std;
 
 class Articulo
 {
-    private:
+private:
 
-        const Cadena reference;
-        const Cadena title;
-        const Fecha release;
-        double price_;
-        int stock_;
+    const Cadena reference;
+    const Cadena title;
+    const Fecha release;
+    double price;
+    int stock;
 
-    public:
+public:
+    //Constructor...
+    Articulo(Cadena reference, Cadena title, Fecha date, double price, int stock): 
+    reference(reference), title(title), release(date), price(price), stock(stock){};
 
-        Articulo(Cadena reference, Cadena title, Fecha date, double price, int stock): 
-        reference(reference), title(title), release(date), price_(price), stock_(stock){};
+    //Observables...
+    Cadena referencia() const{return reference;};
+    Cadena titulo() const{return title;};
+    Fecha f_publi() const{return release;};
+    double precio() const{return price;};
+    int stock() const{return stock;};
 
-        Cadena referencia() const{return reference;};
-        Cadena titulo() const{return title;};
-        Fecha f_publi() const{return release;};
-        double precio() const{return price_;};
-        int stock() const{return stock_;};
-        double& precio(){return price_;};
-        int& stock(){return stock_;};
+    //Modificadores...
+    double& precio(){return price;};
+    int& stock(){return stock;};
         
 };
 
+//Metodos externos...x
 ostream& operator<<(ostream& os, const Articulo& art);
 
 #endif

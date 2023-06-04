@@ -33,7 +33,7 @@ Clave::Clave(const char* cad)
     sal[i]='\0';
     
     char * p = crypt(cad, sal); //crypt(cadena en claro, la sal)
-    clave_=p;
+    cifrada=p;
 }
 
 //Método verifica que devuelve true or false si la cadena que le paso es la clave almacenada
@@ -43,7 +43,7 @@ bool Clave::verifica(const char * cad) const
     int i;
     for (i = 0; i < 2; i++)
     {
-        sal[i]=clave_[i];
+        sal[i]=cifrada[i];
     }
 
     sal[i]='\0';
@@ -55,14 +55,14 @@ bool Clave::verifica(const char * cad) const
         throw fallo;
     }
 
-    return(strcmp(p, clave_.c_str())==0);
+    return(strcmp(p, cifrada.c_str())==0);
 }
 
 //------------------------------------------------------USUARIO---------------------------------------------------------------------
 
 unordered_set<Cadena> Usuario::conjunto_ids; //Como es static lo inicializo aquí
 
-Usuario::Usuario(const Cadena& id, const Cadena& nombre, const Cadena& apellidos, const Cadena& direccion, const Clave& pass): id_{id}, nombre_{nombre}, apellidos_{apellidos}, direccion_{direccion}, pass_{pass}
+Usuario::Usuario(const Cadena& id, const Cadena& nombre, const Cadena& apellidos, const Cadena& direccion, const Clave& pass): id_{id}, name{nombre}, lastName{apellidos}, address{direccion}, pass{pass}
 {
     if(!conjunto_ids.insert(id).second) //Si el id ya existe el segundo dato del par que devuelve el insert será falso
     {
@@ -75,49 +75,54 @@ Usuario::Usuario(const Cadena& id, const Cadena& nombre, const Cadena& apellidos
 void Usuario::es_titular_de(const Tarjeta& t)
 {
     if(t.titular()==this)
-        tarjetas_[t.numero()]=const_cast<Tarjeta*>(&t);
+        tar[t.numero()]=const_cast<Tarjeta*>(&t);
 }
 
 void Usuario::no_es_titular_de(const Tarjeta& t)
 {
-    tarjetas_.erase(t.numero());
+    tar.erase(t.numero());
 }
 
 //Asociación con artículos
 void Usuario::compra(const Articulo& a, unsigned int c)
 {
-    Articulos::iterator i=this->articulos_.end();
-    if (articulos_.find(const_cast<Articulo*>(&a)) != i)
+    Articulos::iterator i=this->art.end();
+    if (art.find(const_cast<Articulo*>(&a)) != i)
     {
         if(c==0)
         {
-            articulos_.erase(const_cast<Articulo*>(&a));
+            art.erase(const_cast<Articulo*>(&a));
         }
         else
         {
-            articulos_[const_cast<Articulo*>(&a)]=c;
+            art[const_cast<Articulo*>(&a)]=c;
         }
     }   
     else
     {
         if(c!=0)
         {
-            articulos_.insert( std::pair<Articulo * const, unsigned int>(const_cast<Articulo*>(&a), c));
+            art.insert( std::pair<Articulo * const, unsigned int>(const_cast<Articulo*>(&a), c));
         }   
     }
+}
+
+void Usuario::vaciar_carro()
+{
+    art.clear();
 }
 
 //Número de elementos en el carrito
 size_t Usuario::n_articulos() const noexcept
 {
-    return (articulos_.size());
+    return (art.size());
 }
 
 //El destructor deberá llamar a anula_titular PARA TODAS LAS TARJETAS
 Usuario::~Usuario()
 {
-    Tarjetas::const_iterator i=tarjetas_.cbegin();
-    while(i!=tarjetas_.cend())
+    Tarjetas::const_iterator i=tar.cbegin();
+    while(i!=tar.cend())
     {
         i->second->anula_titular();
         i++;
@@ -127,9 +132,9 @@ Usuario::~Usuario()
 
 std::ostream& operator <<(std::ostream& os, const Usuario& user) //Escritura de Usuario
 {
-    os<< user.id()<<"["<<user.pass_.clave().c_str()<<"]"<<user.nombre()<<user.apellidos()<<"\n"<<user.direccion()<<endl;
+    os << user.id() <<"["<<user.pass.clave().c_str()<<"]"<<user.nombre()<<user.apellidos()<<"\n"<<user.direccion()<<endl;
     os<<"Tarjetas:" ;
-    for(auto &t: user.tarjetas_) 
+    for(auto &t: user.tar) 
         os<<*t.second<<endl;       
     return os;
 }
