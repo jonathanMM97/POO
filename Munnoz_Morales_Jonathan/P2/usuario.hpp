@@ -101,7 +101,7 @@ private:
     Tarjetas tar;
     Articulos art;
 
-    static unordered_set<Cadena> conjunto_ids;
+    unordered_set<Cadena> conjunto_ids;
 };
 
 
